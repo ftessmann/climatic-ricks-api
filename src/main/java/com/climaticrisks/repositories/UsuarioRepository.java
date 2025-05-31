@@ -32,25 +32,42 @@ public class UsuarioRepository {
             }
 
             String sql = """
-                INSERT INTO gs_usuario (nome, email, telefone, endereco_id, senha, is_defesa_civil, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """;
+            INSERT INTO gs_usuario (nome, email, telefone, endereco_id, senha, is_defesa_civil)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """;
 
-            try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql, new String[]{"ID"})) {
                 stmt.setString(1, usuario.getNome());
                 stmt.setString(2, usuario.getEmail());
                 stmt.setString(3, usuario.getTelefone());
-                stmt.setInt(4, usuario.getEndereco() != null ? usuario.getEndereco().getId() : null);
+
+                if (usuario.getEndereco() != null && usuario.getEndereco().getId() != null) {
+                    stmt.setInt(4, usuario.getEndereco().getId());
+                } else {
+                    stmt.setNull(4, Types.INTEGER);
+                }
+
                 stmt.setString(5, usuario.getSenha());
                 stmt.setInt(6, usuario.getDefesaCivil() != null && usuario.getDefesaCivil() ? 1 : 0);
-                stmt.setTimestamp(7, Timestamp.valueOf(usuario.getCreatedAt()));
-                stmt.setTimestamp(8, Timestamp.valueOf(usuario.getUpdatedAt()));
 
                 stmt.executeUpdate();
 
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
-                        usuario.setId(rs.getInt(1));
+                        System.out.println("Valor retornado como ID: '" + rs.getString(1) + "'");
+                        System.out.println("Tipo da coluna: " + rs.getMetaData().getColumnTypeName(1));
+
+                        try {
+                            usuario.setId(rs.getInt(1));
+                        } catch (SQLException e) {
+                            String idStr = rs.getString(1);
+                            if (idStr != null && idStr.matches("\\d+")) {
+                                usuario.setId(Integer.parseInt(idStr));
+                            } else {
+                                System.err.println("ID retornado não é numérico: '" + idStr + "', buscando último ID inserido");
+                                usuario.setId(getLastInsertedId(conn, "gs_usuario"));
+                            }
+                        }
                     }
                 }
             }
@@ -66,7 +83,7 @@ public class UsuarioRepository {
                     throw new RuntimeException("Erro ao fazer rollback", rollbackEx);
                 }
             }
-            throw new RuntimeException("Erro ao salvar usuário", e);
+            throw new RuntimeException("Erro ao salvar usuário: " + e.getMessage(), e);
         } finally {
             if (conn != null) {
                 try {
@@ -77,6 +94,17 @@ public class UsuarioRepository {
                 }
             }
         }
+    }
+
+    private Integer getLastInsertedId(Connection conn, String tableName) throws SQLException {
+        String sql = "SELECT MAX(id) FROM " + tableName;
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return null;
     }
 
     public Optional<Usuario> findById(Integer id) {

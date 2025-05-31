@@ -19,38 +19,46 @@ public class EnderecoRepository {
 
     public Endereco save(Endereco endereco) {
         String sql = """
-            INSERT INTO gs_endereco (logradouro, bairro, cep, tipo_solo, altitude_rua,
-                                   tipo_construcao, bairro_risco, proximo_corrego, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """;
+        INSERT INTO gs_endereco (logradouro, bairro, cep, tipo_solo, altitude_rua, 
+                               tipo_construcao, bairro_risco, proximo_corrego)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """;
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, new String[]{"ID"})) {
 
             stmt.setString(1, endereco.getLogradouro());
             stmt.setString(2, endereco.getBairro());
             stmt.setString(3, endereco.getCep());
-            stmt.setString(4, endereco.getTipoSolo() != null ? endereco.getTipoSolo().getValor() : null);
-            stmt.setString(5, endereco.getAltitudeRua() != null ? endereco.getAltitudeRua().getValor() : null);
-            stmt.setString(6, endereco.getTipoConstrucao() != null ? endereco.getTipoConstrucao().getValor() : null);
-            stmt.setString(7, endereco.getBairroRisco() != null ? endereco.getBairroRisco().getValor() : null);
+            stmt.setString(4, endereco.getTipoSolo() != null ? endereco.getTipoSolo().getValor() : "asfalto");
+            stmt.setString(5, endereco.getAltitudeRua() != null ? endereco.getAltitudeRua().getValor() : "nivel");
+            stmt.setString(6, endereco.getTipoConstrucao() != null ? endereco.getTipoConstrucao().getValor() : "alvernaria");
+            stmt.setString(7, endereco.getBairroRisco() != null ? endereco.getBairroRisco().getValor() : "baixo");
             stmt.setInt(8, endereco.getProximoCorrego() != null && endereco.getProximoCorrego() ? 1 : 0);
-            stmt.setTimestamp(9, Timestamp.valueOf(endereco.getCreatedAt()));
-            stmt.setTimestamp(10, Timestamp.valueOf(endereco.getUpdatedAt()));
 
             stmt.executeUpdate();
 
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    endereco.setId(rs.getInt(1));
+                    try {
+                        endereco.setId(rs.getInt(1));
+                    } catch (SQLException e) {
+                        String idStr = rs.getString(1);
+                        if (idStr != null && idStr.matches("\\d+")) {
+                            endereco.setId(Integer.parseInt(idStr));
+                        } else {
+                            throw new RuntimeException("ID gerado não é válido: " + idStr);
+                        }
+                    }
                 }
             }
 
             return endereco;
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao salvar endereço", e);
+            throw new RuntimeException("Erro ao salvar endereço: " + e.getMessage(), e);
         }
     }
+
 
     public Optional<Endereco> findById(Integer id) {
         String sql = """
