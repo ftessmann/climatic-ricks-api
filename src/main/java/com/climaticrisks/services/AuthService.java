@@ -31,7 +31,6 @@ public class AuthService {
             return new AuthResult(false, "Credenciais inválidas", null, null);
         }
 
-        // Definir roles baseado no tipo de usuário
         Set<String> roles = usuario.getDefesaCivil() ?
                 Set.of("USER", "DEFESA_CIVIL") : Set.of("USER");
 
