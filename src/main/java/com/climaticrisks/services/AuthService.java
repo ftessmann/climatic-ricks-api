@@ -7,7 +7,6 @@ import jakarta.inject.Inject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
-import java.util.Set;
 
 @ApplicationScoped
 public class AuthService {
@@ -31,14 +30,10 @@ public class AuthService {
             return new AuthResult(false, "Credenciais inválidas", null, null);
         }
 
-        Set<String> roles = usuario.getDefesaCivil() ?
-                Set.of("USER", "DEFESA_CIVIL") : Set.of("USER");
-
         String token = jwtService.generateToken(
                 usuario.getId().toString(),
                 usuario.getEmail(),
-                usuario.getNome(),
-                roles
+                usuario.getNome()
         );
 
         String refreshToken = jwtService.generateRefreshToken(usuario.getId().toString());
