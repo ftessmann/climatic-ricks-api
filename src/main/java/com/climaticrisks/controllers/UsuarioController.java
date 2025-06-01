@@ -6,6 +6,7 @@ import com.climaticrisks.responses.ErrorResponse;
 import com.climaticrisks.services.AuthService;
 import com.climaticrisks.validators.UsuarioValidator;
 import com.climaticrisks.validators.UsuarioValidator.ValidationResult;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -16,6 +17,7 @@ import java.util.Optional;
 @Path("/usuarios")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class UsuarioController {
 
     @Inject
