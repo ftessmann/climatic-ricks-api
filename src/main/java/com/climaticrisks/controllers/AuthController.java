@@ -1,5 +1,9 @@
 package com.climaticrisks.controllers;
 
+import com.climaticrisks.requests.LoginRequest;
+import com.climaticrisks.responses.ErrorResponse;
+import com.climaticrisks.responses.LoginResponse;
+import com.climaticrisks.responses.LogoutResponse;
 import com.climaticrisks.services.AuthService;
 import com.climaticrisks.services.AuthService.AuthResult;
 import com.climaticrisks.validators.UsuarioValidator;
@@ -60,92 +64,8 @@ public class AuthController {
     }
 
     @POST
-    @Path("/refresh")
-    public Response refresh(RefreshTokenRequest request) {
-        return Response.status(Response.Status.NOT_IMPLEMENTED)
-                .entity(new ErrorResponse("Não implementado", List.of("Funcionalidade em desenvolvimento")))
-                .build();
-    }
-
-    @POST
     @Path("/logout")
     public Response logout() {
         return Response.ok(new LogoutResponse("Logout realizado com sucesso")).build();
-    }
-
-    public static class LoginRequest {
-        private String email;
-        private String senha;
-
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-
-        public String getSenha() { return senha; }
-        public void setSenha(String senha) { this.senha = senha; }
-    }
-
-    public static class LoginResponse {
-        private String accessToken;
-        private String refreshToken;
-        private String tokenType;
-        private long expiresIn;
-        private String message;
-
-        public LoginResponse(String accessToken, String refreshToken, String tokenType, long expiresIn, String message) {
-            this.accessToken = accessToken;
-            this.refreshToken = refreshToken;
-            this.tokenType = tokenType;
-            this.expiresIn = expiresIn;
-            this.message = message;
-        }
-
-        public String getAccessToken() { return accessToken; }
-        public void setAccessToken(String accessToken) { this.accessToken = accessToken; }
-
-        public String getRefreshToken() { return refreshToken; }
-        public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
-
-        public String getTokenType() { return tokenType; }
-        public void setTokenType(String tokenType) { this.tokenType = tokenType; }
-
-        public long getExpiresIn() { return expiresIn; }
-        public void setExpiresIn(long expiresIn) { this.expiresIn = expiresIn; }
-
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
-    }
-
-    public static class RefreshTokenRequest {
-        private String refreshToken;
-
-        public String getRefreshToken() { return refreshToken; }
-        public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
-    }
-
-    public static class LogoutResponse {
-        private String message;
-
-        public LogoutResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
-    }
-
-    public static class ErrorResponse {
-        private String message;
-        private List<String> errors;
-
-        public ErrorResponse(String message, List<String> errors) {
-            this.message = message;
-            this.errors = errors;
-        }
-
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
-
-        public List<String> getErrors() { return errors; }
-        public void setErrors(List<String> errors) { this.errors = errors; }
     }
 }
