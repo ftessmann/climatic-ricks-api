@@ -2,6 +2,7 @@ package com.climaticrisks.controllers;
 
 import com.climaticrisks.models.Usuario;
 import com.climaticrisks.repositories.UsuarioRepository;
+import com.climaticrisks.responses.ErrorResponse;
 import com.climaticrisks.services.AuthService;
 import com.climaticrisks.validators.UsuarioValidator;
 import com.climaticrisks.validators.UsuarioValidator.ValidationResult;
@@ -193,61 +194,5 @@ public class UsuarioController {
                     .entity(new ErrorResponse("Erro interno", List.of(e.getMessage())))
                     .build();
         }
-    }
-
-    @POST
-    @Path("/validate-email")
-    public Response validateEmail(EmailValidationRequest request) {
-        try {
-            ValidationResult validation = usuarioValidator.validateEmailUnique(request.getEmail());
-            if (validation.isValid()) {
-                return Response.ok(new ValidationResponse(true, "Email disponível")).build();
-            } else {
-                return Response.ok(new ValidationResponse(false, validation.getErrorsAsString())).build();
-            }
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(new ErrorResponse("Erro interno", List.of(e.getMessage())))
-                    .build();
-        }
-    }
-
-    public static class ErrorResponse {
-        private String message;
-        private List<String> errors;
-
-        public ErrorResponse(String message, List<String> errors) {
-            this.message = message;
-            this.errors = errors;
-        }
-
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
-
-        public List<String> getErrors() { return errors; }
-        public void setErrors(List<String> errors) { this.errors = errors; }
-    }
-
-    public static class ValidationResponse {
-        private boolean valid;
-        private String message;
-
-        public ValidationResponse(boolean valid, String message) {
-            this.valid = valid;
-            this.message = message;
-        }
-
-        public boolean isValid() { return valid; }
-        public void setValid(boolean valid) { this.valid = valid; }
-
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
-    }
-
-    public static class EmailValidationRequest {
-        private String email;
-
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
     }
 }
