@@ -16,6 +16,9 @@ public class AlagamentoRepository {
     @Inject
     DataSource dataSource;
 
+    @Inject
+    HistoricoRiscoRepository historicoRiscoRepository;
+
     public Alagamento save(Alagamento alagamento) {
         String sql = """
         INSERT INTO gs_alagamento (usuario_id, endereco_id, descricao, data_ocorrencia, ativo, created_at, updated_at)
@@ -58,6 +61,11 @@ public class AlagamentoRepository {
 
             alagamento.setDataOcorrencia(LocalDateTime.now());
             alagamento.setAtivo(true);
+
+            if (alagamento.getId() != null && alagamento.getEnderecoId() != null) {
+                historicoRiscoRepository.atualizarHistoricoRisco(alagamento.getEnderecoId());
+            }
+
             return alagamento;
 
         } catch (SQLException e) {

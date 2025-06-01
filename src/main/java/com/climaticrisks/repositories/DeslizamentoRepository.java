@@ -16,6 +16,9 @@ public class DeslizamentoRepository {
     @Inject
     DataSource dataSource;
 
+    @Inject
+    HistoricoRiscoRepository historicoRiscoRepository;
+
     public Deslizamento save(Deslizamento deslizamento) {
         String sql = """
         INSERT INTO gs_deslizamento (usuario_id, endereco_id, descricao, data_ocorrencia, ativo, created_at, updated_at)
@@ -58,6 +61,11 @@ public class DeslizamentoRepository {
 
             deslizamento.setDataOcorrencia(LocalDateTime.now());
             deslizamento.setAtivo(true);
+
+            if (deslizamento.getId() != null && deslizamento.getEnderecoId() != null) {
+                historicoRiscoRepository.atualizarHistoricoRisco(deslizamento.getEnderecoId());
+            }
+
             return deslizamento;
 
         } catch (SQLException e) {
