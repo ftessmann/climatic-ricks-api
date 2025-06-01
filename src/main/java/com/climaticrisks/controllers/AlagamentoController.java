@@ -9,6 +9,7 @@ import com.climaticrisks.requests.AlagamentoUpdateRequest;
 import com.climaticrisks.responses.AlagamentoResponse;
 import com.climaticrisks.responses.ErrorResponse;
 
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -24,7 +25,7 @@ import java.util.Optional;
 @Path("/alagamentos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed({"USER"})
+@Authenticated
 public class AlagamentoController {
 
     @Inject
@@ -259,7 +260,6 @@ public class AlagamentoController {
     }
 
     @GET
-    @RolesAllowed({"DEFESA_CIVIL"})
     public Response findAll() {
         try {
             List<Alagamento> alagamentos = alagamentoRepository.findAll();
