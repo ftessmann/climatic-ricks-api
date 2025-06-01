@@ -181,22 +181,38 @@ public class EnderecoRepository {
 
         String tipoSolo = rs.getString("tipo_solo");
         if (tipoSolo != null) {
-            endereco.setTipoSolo(TipoSolo.valueOf(tipoSolo.toUpperCase().replace("ã", "A")));
+            switch (tipoSolo.toLowerCase()) {
+                case "vegetacao", "vegetação" -> endereco.setTipoSolo(TipoSolo.VEGETACAO);
+                case "terra" -> endereco.setTipoSolo(TipoSolo.TERRA);
+                case "asfalto" -> endereco.setTipoSolo(TipoSolo.ASFALTO);
+            }
         }
 
         String altitudeRua = rs.getString("altitude_rua");
         if (altitudeRua != null) {
-            endereco.setAltitudeRua(AltitudeRua.valueOf(altitudeRua.toUpperCase()));
+            switch (altitudeRua.toLowerCase()) {
+                case "nivel", "nível" -> endereco.setAltitudeRua(AltitudeRua.NIVEL);
+                case "abaixo" -> endereco.setAltitudeRua(AltitudeRua.ABAIXO);
+                case "acima" -> endereco.setAltitudeRua(AltitudeRua.ACIMA);
+            }
         }
 
         String tipoConstrucao = rs.getString("tipo_construcao");
         if (tipoConstrucao != null) {
-            endereco.setTipoConstrucao(TipoConstrucao.valueOf(tipoConstrucao.toUpperCase()));
+            switch (tipoConstrucao.toLowerCase()) {
+                case "madeira" -> endereco.setTipoConstrucao(TipoConstrucao.MADEIRA);
+                case "alvernaria" -> endereco.setTipoConstrucao(TipoConstrucao.ALVERNARIA);
+                case "mista" -> endereco.setTipoConstrucao(TipoConstrucao.MISTA);
+            }
         }
 
         String bairroRisco = rs.getString("bairro_risco");
         if (bairroRisco != null) {
-            endereco.setBairroRisco(TipoRisco.valueOf(bairroRisco.toUpperCase().replace("É", "E")));
+            switch (bairroRisco.toLowerCase()) {
+                case "baixo" -> endereco.setBairroRisco(TipoRisco.BAIXO);
+                case "medio", "médio" -> endereco.setBairroRisco(TipoRisco.MEDIO);
+                case "alto" -> endereco.setBairroRisco(TipoRisco.ALTO);
+            }
         }
 
         endereco.setProximoCorrego(rs.getInt("proximo_corrego") == 1);
@@ -218,4 +234,5 @@ public class EnderecoRepository {
 
         return endereco;
     }
+
 }
