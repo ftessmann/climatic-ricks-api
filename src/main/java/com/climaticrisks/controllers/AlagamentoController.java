@@ -10,7 +10,6 @@ import com.climaticrisks.responses.AlagamentoResponse;
 import com.climaticrisks.responses.ErrorResponse;
 
 import io.quarkus.security.Authenticated;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;

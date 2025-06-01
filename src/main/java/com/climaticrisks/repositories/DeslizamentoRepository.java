@@ -18,37 +18,53 @@ public class DeslizamentoRepository {
 
     public Deslizamento save(Deslizamento deslizamento) {
         String sql = """
-            INSERT INTO gs_deslizamento (usuario_id, endereco_id, descricao, data_ocorrencia, ativo)
-            VALUES (?, ?, ?, ?, ?)
-            RETURNING id INTO ?
-            """;
+        INSERT INTO gs_deslizamento (usuario_id, endereco_id, descricao, data_ocorrencia, ativo, created_at, updated_at)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """;
 
         try (Connection conn = dataSource.getConnection();
-             CallableStatement stmt = conn.prepareCall(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, deslizamento.getUsuarioId());
             stmt.setInt(2, deslizamento.getEnderecoId());
-            stmt.setString(3, deslizamento.getDescricao());
 
-            if (deslizamento.getDataOcorrencia() != null) {
-                stmt.setTimestamp(4, Timestamp.valueOf(deslizamento.getDataOcorrencia()));
+            if (deslizamento.getDescricao() != null && !deslizamento.getDescricao().trim().isEmpty()) {
+                stmt.setString(3, deslizamento.getDescricao());
             } else {
-                stmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+                stmt.setNull(3, Types.CLOB);
             }
 
-            stmt.setInt(5, deslizamento.getAtivo() != null && deslizamento.getAtivo() ? 1 : 0);
+            int rowsAffected = stmt.executeUpdate();
 
-            stmt.registerOutParameter(6, Types.INTEGER);
+            if (rowsAffected > 0) {
+                String selectSql = """
+                SELECT id FROM gs_deslizamento 
+                WHERE usuario_id = ? AND endereco_id = ? 
+                AND created_at = (SELECT MAX(created_at) FROM gs_deslizamento WHERE usuario_id = ?)
+                """;
 
-            stmt.execute();
+                try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                    selectStmt.setInt(1, deslizamento.getUsuarioId());
+                    selectStmt.setInt(2, deslizamento.getEnderecoId());
+                    selectStmt.setInt(3, deslizamento.getUsuarioId());
 
-            deslizamento.setId(stmt.getInt(6));
+                    try (ResultSet rs = selectStmt.executeQuery()) {
+                        if (rs.next()) {
+                            deslizamento.setId(rs.getInt("id"));
+                        }
+                    }
+                }
+            }
 
+            deslizamento.setDataOcorrencia(LocalDateTime.now());
+            deslizamento.setAtivo(true);
             return deslizamento;
+
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar deslizamento: " + e.getMessage(), e);
         }
     }
+
 
     public Optional<Deslizamento> findById(Integer id) {
         String sql = """

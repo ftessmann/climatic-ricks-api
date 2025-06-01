@@ -18,33 +18,48 @@ public class AlagamentoRepository {
 
     public Alagamento save(Alagamento alagamento) {
         String sql = """
-            INSERT INTO gs_alagamento (usuario_id, endereco_id, descricao, data_ocorrencia, ativo)
-            VALUES (?, ?, ?, ?, ?)
-            RETURNING id INTO ?
-            """;
+        INSERT INTO gs_alagamento (usuario_id, endereco_id, descricao, data_ocorrencia, ativo, created_at, updated_at)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """;
 
         try (Connection conn = dataSource.getConnection();
-             CallableStatement stmt = conn.prepareCall(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, alagamento.getUsuarioId());
             stmt.setInt(2, alagamento.getEnderecoId());
-            stmt.setString(3, alagamento.getDescricao());
 
-            if (alagamento.getDataOcorrencia() != null) {
-                stmt.setTimestamp(4, Timestamp.valueOf(alagamento.getDataOcorrencia()));
+            if (alagamento.getDescricao() != null && !alagamento.getDescricao().trim().isEmpty()) {
+                stmt.setString(3, alagamento.getDescricao());
             } else {
-                stmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+                stmt.setNull(3, Types.CLOB);
             }
 
-            stmt.setInt(5, alagamento.getAtivo() != null && alagamento.getAtivo() ? 1 : 0);
+            int rowsAffected = stmt.executeUpdate();
 
-            stmt.registerOutParameter(6, Types.INTEGER);
+            if (rowsAffected > 0) {
+                String selectSql = """
+                SELECT id FROM gs_alagamento 
+                WHERE usuario_id = ? AND endereco_id = ? 
+                AND created_at = (SELECT MAX(created_at) FROM gs_alagamento WHERE usuario_id = ?)
+                """;
 
-            stmt.execute();
+                try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                    selectStmt.setInt(1, alagamento.getUsuarioId());
+                    selectStmt.setInt(2, alagamento.getEnderecoId());
+                    selectStmt.setInt(3, alagamento.getUsuarioId());
 
-            alagamento.setId(stmt.getInt(6));
+                    try (ResultSet rs = selectStmt.executeQuery()) {
+                        if (rs.next()) {
+                            alagamento.setId(rs.getInt("id"));
+                        }
+                    }
+                }
+            }
 
+            alagamento.setDataOcorrencia(LocalDateTime.now());
+            alagamento.setAtivo(true);
             return alagamento;
+
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar alagamento: " + e.getMessage(), e);
         }
