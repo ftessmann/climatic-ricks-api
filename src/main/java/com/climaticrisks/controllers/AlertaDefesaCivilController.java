@@ -5,8 +5,7 @@ import com.climaticrisks.enums.TipoRisco;
 import com.climaticrisks.repositories.AlertaDefesaCivilRepository;
 import com.climaticrisks.responses.ErrorResponse;
 import com.climaticrisks.responses.SuccessResponse;
-import io.quarkus.security.Authenticated;
-import jakarta.annotation.security.RolesAllowed;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -18,13 +17,13 @@ import java.util.Optional;
 @Path("/alertas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@PermitAll
 public class AlertaDefesaCivilController {
 
     @Inject
     AlertaDefesaCivilRepository alertaRepository;
 
     @POST
-    @Authenticated
     public Response create(AlertaDefesaCivil alerta) {
         try {
             if (alerta.getTitulo() == null || alerta.getTitulo().trim().isEmpty()) {
@@ -135,7 +134,6 @@ public class AlertaDefesaCivilController {
 
     @PUT
     @Path("/{id}")
-    @Authenticated
     public Response update(@PathParam("id") Integer id, AlertaDefesaCivil alerta) {
         try {
             if (id == null || id <= 0) {
@@ -178,7 +176,6 @@ public class AlertaDefesaCivilController {
 
     @DELETE
     @Path("/{id}")
-    @Authenticated
     public Response delete(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {
@@ -207,7 +204,6 @@ public class AlertaDefesaCivilController {
 
     @PUT
     @Path("/{id}/desativar")
-    @Authenticated
     public Response desativar(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {

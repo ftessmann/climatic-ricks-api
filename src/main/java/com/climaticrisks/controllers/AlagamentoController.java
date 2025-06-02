@@ -10,6 +10,7 @@ import com.climaticrisks.responses.AlagamentoResponse;
 import com.climaticrisks.responses.ErrorResponse;
 
 import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -24,7 +25,6 @@ import java.util.Optional;
 @Path("/alagamentos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Authenticated
 public class AlagamentoController {
 
     @Inject
@@ -37,6 +37,7 @@ public class AlagamentoController {
     JsonWebToken jwt;
 
     @POST
+    @Authenticated
     public Response create(AlagamentoRequest request) {
         try {
             String userIdStr = jwt.getClaim("userId");
@@ -90,6 +91,7 @@ public class AlagamentoController {
 
     @GET
     @Path("/meus")
+    @Authenticated
     public Response findMyAlagamentos() {
         try {
             String userIdStr = jwt.getClaim("userId");
@@ -118,6 +120,7 @@ public class AlagamentoController {
 
     @GET
     @Path("/{id}")
+    @Authenticated
     public Response findById(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {
@@ -156,6 +159,7 @@ public class AlagamentoController {
 
     @PUT
     @Path("/{id}")
+    @Authenticated
     public Response update(@PathParam("id") Integer id, AlagamentoUpdateRequest request) {
         try {
             if (id == null || id <= 0) {
@@ -212,6 +216,7 @@ public class AlagamentoController {
 
     @DELETE
     @Path("/{id}")
+    @Authenticated
     public Response delete(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {
@@ -259,6 +264,7 @@ public class AlagamentoController {
     }
 
     @GET
+    @PermitAll
     public Response findAll() {
         try {
             List<Alagamento> alagamentos = alagamentoRepository.findAll();

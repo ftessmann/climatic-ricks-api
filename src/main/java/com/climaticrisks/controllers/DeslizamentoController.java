@@ -9,6 +9,7 @@ import com.climaticrisks.requests.DeslizamentoUpdateRequest;
 import com.climaticrisks.responses.DeslizamentoResponse;
 import com.climaticrisks.responses.ErrorResponse;
 import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -21,7 +22,6 @@ import java.util.Optional;
 @Path("/deslizamentos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Authenticated
 public class DeslizamentoController {
 
     @Inject
@@ -34,6 +34,7 @@ public class DeslizamentoController {
     JsonWebToken jwt;
 
     @POST
+    @Authenticated
     public Response create(DeslizamentoRequest request) {
         try {
             String userIdStr = jwt.getClaim("userId");
@@ -87,6 +88,7 @@ public class DeslizamentoController {
 
     @GET
     @Path("/meus")
+    @Authenticated
     public Response findMyDeslizamentos() {
         try {
             String userIdStr = jwt.getClaim("userId");
@@ -115,6 +117,7 @@ public class DeslizamentoController {
 
     @GET
     @Path("/{id}")
+    @Authenticated
     public Response findById(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {
@@ -153,6 +156,7 @@ public class DeslizamentoController {
 
     @PUT
     @Path("/{id}")
+    @Authenticated
     public Response update(@PathParam("id") Integer id, DeslizamentoUpdateRequest request) {
         try {
             if (id == null || id <= 0) {
@@ -209,6 +213,7 @@ public class DeslizamentoController {
 
     @DELETE
     @Path("/{id}")
+    @Authenticated
     public Response delete(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {
@@ -256,6 +261,7 @@ public class DeslizamentoController {
     }
 
     @GET
+    @PermitAll
     public Response findAll() {
         try {
             List<Deslizamento> deslizamentos = deslizamentoRepository.findAll();
