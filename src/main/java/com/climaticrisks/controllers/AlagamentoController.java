@@ -37,11 +37,14 @@ public class AlagamentoController {
     JsonWebToken jwt;
 
     @POST
-    @Authenticated
     public Response create(AlagamentoRequest request) {
         try {
             String userIdStr = jwt.getClaim("userId");
             Integer usuarioId = Integer.parseInt(userIdStr);
+
+            System.out.println("=== DEBUG CREATE ALAGAMENTO ===");
+            System.out.println("JWT presente: " + (jwt != null));
+            System.out.println("UserId do token: " + userIdStr);
 
             if (request.getEndereco() == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -133,9 +136,8 @@ public class AlagamentoController {
             if (alagamento.isPresent()) {
                 String userIdStr = jwt.getClaim("userId");
                 Integer usuarioId = Integer.parseInt(userIdStr);
-                boolean isDefesaCivil = jwt.getGroups().contains("DEFESA_CIVIL");
 
-                if (!isDefesaCivil && !alagamento.get().getUsuarioId().equals(usuarioId)) {
+                if (!alagamento.get().getUsuarioId().equals(usuarioId)) {
                     return Response.status(Response.Status.FORBIDDEN)
                             .entity(new ErrorResponse("Acesso negado", List.of("Você só pode ver seus próprios alagamentos")))
                             .build();

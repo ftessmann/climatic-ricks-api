@@ -26,7 +26,6 @@ public class RelatorioEventoController {
     @POST
     public Response create(RelatorioEvento relatorio) {
         try {
-            // Validações básicas
             if (relatorio.getPeriodo() == null || relatorio.getPeriodo().trim().isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(new ErrorResponse("Período é obrigatório", List.of("periodo não pode ser vazio")))
