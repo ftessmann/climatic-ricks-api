@@ -213,7 +213,6 @@ public class RelatorioEventoController {
                         .build();
             }
 
-            // Verificar se relatório existe
             Optional<RelatorioEvento> existingRelatorio = relatorioRepository.findById(id);
             if (existingRelatorio.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND)

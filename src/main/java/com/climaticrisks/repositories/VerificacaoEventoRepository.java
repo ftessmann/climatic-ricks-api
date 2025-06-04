@@ -44,7 +44,6 @@ public class VerificacaoEventoRepository {
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                // Buscar o ID do registro inserido
                 String selectSql = """
                     SELECT id FROM gs_verificacao_evento 
                     WHERE usuario_id = ? AND created_at = (SELECT MAX(created_at) FROM gs_verificacao_evento WHERE usuario_id = ?)
