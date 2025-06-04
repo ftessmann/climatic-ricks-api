@@ -279,7 +279,6 @@ public class HistoricoRiscoRepository {
                 enderecoIds.add(rs.getInt("endereco_id"));
             }
 
-            // Atualizar histórico para cada endereço
             for (Integer enderecoId : enderecoIds) {
                 atualizarHistoricoRisco(enderecoId);
             }

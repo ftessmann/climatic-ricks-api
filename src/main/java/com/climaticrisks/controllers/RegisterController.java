@@ -38,7 +38,6 @@ public class RegisterController {
                         .entity(new ErrorResponse("Dados inválidos", validation.getErrors()))
                         .build();
             }
-            System.out.println("Validação OK");
 
             if (usuario.getSenha() != null) {
                 usuario.setSenha(authService.hashSenha(usuario.getSenha()));

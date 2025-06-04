@@ -54,9 +54,6 @@ public class UsuarioRepository {
 
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
-                        System.out.println("Valor retornado como ID: '" + rs.getString(1) + "'");
-                        System.out.println("Tipo da coluna: " + rs.getMetaData().getColumnTypeName(1));
-
                         try {
                             usuario.setId(rs.getInt(1));
                         } catch (SQLException e) {
@@ -291,42 +288,6 @@ public class UsuarioRepository {
             return Optional.empty();
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar usuário por email", e);
-        }
-    }
-
-    public List<Usuario> findByDefesaCivil(Boolean isDefesaCivil) {
-        String sql = """
-            SELECT u.id, u.nome, u.email, u.telefone, u.endereco_id, u.senha, u.is_defesa_civil,
-                   u.created_at, u.updated_at, u.deleted_at
-            FROM gs_usuario u
-            WHERE u.is_defesa_civil = ? AND u.deleted_at IS NULL
-            ORDER BY u.nome
-            """;
-
-        List<Usuario> usuarios = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, isDefesaCivil != null && isDefesaCivil ? 1 : 0);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Usuario usuario = mapResultSetToUsuario(rs);
-
-                    Integer enderecoId = rs.getInt("endereco_id");
-                    if (enderecoId != null && !rs.wasNull()) {
-                        Optional<Endereco> endereco = enderecoRepository.findById(enderecoId);
-                        endereco.ifPresent(usuario::setEndereco);
-                    }
-
-                    usuarios.add(usuario);
-                }
-            }
-
-            return usuarios;
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao buscar usuários da defesa civil", e);
         }
     }
 

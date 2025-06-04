@@ -159,42 +159,4 @@ public class UsuarioController {
                     .build();
         }
     }
-
-    @GET
-    @Path("/email/{email}")
-    public Response findByEmail(@PathParam("email") String email) {
-        try {
-            if (email == null || email.trim().isEmpty()) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Email inválido", List.of("Email não pode ser vazio")))
-                        .build();
-            }
-
-            Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
-            if (usuario.isPresent()) {
-                return Response.ok(usuario.get()).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity(new ErrorResponse("Usuário não encontrado", List.of("Usuário com email " + email + " não existe")))
-                        .build();
-            }
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(new ErrorResponse("Erro interno", List.of(e.getMessage())))
-                    .build();
-        }
-    }
-
-    @GET
-    @Path("/defesa-civil")
-    public Response findDefesaCivil(@QueryParam("ativo") @DefaultValue("true") Boolean ativo) {
-        try {
-            List<Usuario> usuarios = usuarioRepository.findByDefesaCivil(ativo);
-            return Response.ok(usuarios).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(new ErrorResponse("Erro interno", List.of(e.getMessage())))
-                    .build();
-        }
-    }
 }

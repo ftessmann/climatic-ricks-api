@@ -42,10 +42,6 @@ public class AlagamentoController {
             String userIdStr = jwt.getClaim("userId");
             Integer usuarioId = Integer.parseInt(userIdStr);
 
-            System.out.println("=== DEBUG CREATE ALAGAMENTO ===");
-            System.out.println("JWT presente: " + (jwt != null));
-            System.out.println("UserId do token: " + userIdStr);
-
             if (request.getEndereco() == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(new ErrorResponse("Endereço é obrigatório", List.of("endereco não pode ser nulo")))

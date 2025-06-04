@@ -80,8 +80,6 @@ public class AlertaDefesaCivilRepository {
                             mensagemNotificacao,
                             alerta.getNivelAlerta()
                     );
-
-                    System.out.println("Usuários do bairro " + bairroAfetado + " foram notificados sobre o alerta: " + alerta.getTitulo());
                 }
             }
 
