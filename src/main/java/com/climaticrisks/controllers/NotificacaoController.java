@@ -4,7 +4,7 @@ import com.climaticrisks.models.Notificacao;
 import com.climaticrisks.repositories.NotificacaoRepository;
 import com.climaticrisks.responses.ErrorResponse;
 import com.climaticrisks.responses.SuccessResponse;
-import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -16,7 +16,7 @@ import java.util.Optional;
 @Path("/notificacoes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Authenticated
+@PermitAll
 public class NotificacaoController {
 
     @Inject

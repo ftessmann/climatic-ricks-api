@@ -6,7 +6,7 @@ import com.climaticrisks.repositories.VerificacaoEventoRepository.EstatisticasVe
 import com.climaticrisks.requests.VerificacaoRequest;
 import com.climaticrisks.requests.VerificacaoUpdateRequest;
 import com.climaticrisks.responses.ErrorResponse;
-import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -18,7 +18,7 @@ import java.util.Optional;
 @Path("/verificacoes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Authenticated
+@PermitAll
 public class VerificacaoEventoController {
 
     @Inject

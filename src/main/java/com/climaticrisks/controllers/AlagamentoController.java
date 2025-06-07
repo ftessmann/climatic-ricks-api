@@ -9,7 +9,6 @@ import com.climaticrisks.requests.AlagamentoUpdateRequest;
 import com.climaticrisks.responses.AlagamentoResponse;
 import com.climaticrisks.responses.ErrorResponse;
 
-import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -90,7 +89,7 @@ public class AlagamentoController {
 
     @GET
     @Path("/meus")
-    @Authenticated
+    @PermitAll
     public Response findMyAlagamentos() {
         try {
             String userIdStr = jwt.getClaim("userId");
@@ -119,7 +118,7 @@ public class AlagamentoController {
 
     @GET
     @Path("/{id}")
-    @Authenticated
+    @PermitAll
     public Response findById(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {
@@ -157,7 +156,7 @@ public class AlagamentoController {
 
     @PUT
     @Path("/{id}")
-    @Authenticated
+    @PermitAll
     public Response update(@PathParam("id") Integer id, AlagamentoUpdateRequest request) {
         try {
             if (id == null || id <= 0) {
@@ -214,7 +213,7 @@ public class AlagamentoController {
 
     @DELETE
     @Path("/{id}")
-    @Authenticated
+    @PermitAll
     public Response delete(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {

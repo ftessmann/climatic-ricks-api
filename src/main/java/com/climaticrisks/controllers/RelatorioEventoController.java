@@ -4,7 +4,7 @@ import com.climaticrisks.models.RelatorioEvento;
 import com.climaticrisks.repositories.RelatorioEventoRepository;
 import com.climaticrisks.requests.RelatorioRequest;
 import com.climaticrisks.responses.ErrorResponse;
-import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @Path("/relatorios")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Authenticated
+@PermitAll
 public class RelatorioEventoController {
 
     @Inject

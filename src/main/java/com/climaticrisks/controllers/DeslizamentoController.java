@@ -34,7 +34,7 @@ public class DeslizamentoController {
     JsonWebToken jwt;
 
     @POST
-    @Authenticated
+    @PermitAll
     public Response create(DeslizamentoRequest request) {
         try {
             String userIdStr = jwt.getClaim("userId");
@@ -88,7 +88,7 @@ public class DeslizamentoController {
 
     @GET
     @Path("/meus")
-    @Authenticated
+    @PermitAll
     public Response findMyDeslizamentos() {
         try {
             String userIdStr = jwt.getClaim("userId");
@@ -117,7 +117,7 @@ public class DeslizamentoController {
 
     @GET
     @Path("/{id}")
-    @Authenticated
+    @PermitAll
     public Response findById(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {
@@ -156,7 +156,7 @@ public class DeslizamentoController {
 
     @PUT
     @Path("/{id}")
-    @Authenticated
+    @PermitAll
     public Response update(@PathParam("id") Integer id, DeslizamentoUpdateRequest request) {
         try {
             if (id == null || id <= 0) {
@@ -213,7 +213,7 @@ public class DeslizamentoController {
 
     @DELETE
     @Path("/{id}")
-    @Authenticated
+    @PermitAll
     public Response delete(@PathParam("id") Integer id) {
         try {
             if (id == null || id <= 0) {
