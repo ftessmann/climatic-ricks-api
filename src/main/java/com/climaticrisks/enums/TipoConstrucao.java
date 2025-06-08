@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TipoConstrucao {
     MADEIRA("madeira"),
-    ALVERNARIA("alvenaria"),
+    ALVERNARIA("alvernaria"),
     MISTA("mista");
 
     private final String valor;
@@ -26,6 +26,11 @@ public enum TipoConstrucao {
                 return tipo;
             }
         }
+
+        if ("alvenaria".equalsIgnoreCase(value)) {
+            return ALVERNARIA;
+        }
+
         throw new IllegalArgumentException("Tipo de construção inválido: " + value);
     }
 }
